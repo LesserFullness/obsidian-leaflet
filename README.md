@@ -1,4 +1,26 @@
 # Obsidian Leaflet
+
+## 添加聚合显示功能
+<img width="1126" height="891" alt="image" src="https://github.com/user-attachments/assets/b3a4dd1d-5a7c-4747-8d8c-9b53185b9a8c" />
+## 说明
+
+- `markerFolder: Daily` - 自动从 Daily 文件夹中读取所有带有 `coordinates` 属性的笔记
+- `enableMarkerClustering: true` - 启用标记聚类功能（需在插件设置中也启用）
+- `showOnClusteringClick: true` - 点击聚类时展开显示所有标记
+
+如果你的日记文件在 frontmatter 中有 `coordinates` 属性，它们会自动显示在地图上。
+
+### 示例 frontmatter
+
+```yaml
+---
+date: 2024-01-01
+coordinates: [28.6190, 119.4284]
+---
+
+```
+
+
 > **Development Status**: Maintenance Mode
 > 
 > Due to a glut of high priority Javalent plugin projects, this plugin is now entering maintenance mode for the time being. This is **not** a permanent status.
