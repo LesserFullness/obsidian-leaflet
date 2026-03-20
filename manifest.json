@@ -1,0 +1,10 @@
+{
+    "id": "obsidian-leaflet-plugin",
+    "name": "Leaflet",
+    "description": "Interactive maps inside your notes (with Marker Clustering)",
+    "version": "6.1.0",
+    "minAppVersion": "0.12.12",
+    "author": "Jeremy Valentine",
+    "repo": "valentine195/obsidian-leaflet-plugin",
+    "isDesktopOnly": false
+}
