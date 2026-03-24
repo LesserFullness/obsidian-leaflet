@@ -1128,27 +1128,39 @@ export class LeafletRenderer extends MarkdownRenderChild {
                         let locations = frontmatter.location ?? frontmatter.coordinates;
                         let usedCoordinates = false;
 
-                        // 如果是字符串格式的 coordinates（如 "29.98,122.20"），转换为数组
-                        if (typeof locations === "string") {
-                            const parts = locations.replace(/["'\[\]]/g, '').trim().split(/[,，\s]+/);
-                            if (parts.length >= 2) {
-                                // 检查是否是有效的数字坐标
-                                const lat = Number(parts[0].trim());
-                                const long = Number(parts[1].trim());
-                                if (isNaN(lat) || isNaN(long)) {
-                                    // location 不是有效坐标，如果存在 coordinates 则尝试使用
-                                    if (frontmatter.coordinates && frontmatter.location) {
-                                        locations = frontmatter.coordinates;
-                                        usedCoordinates = true;
-                                    } else {
-                                        this.map.log(`Could not parse location string: ${locations}`);
-                                        continue;
+                        // 解析坐标（支持分号分隔的多个坐标）
+                        const parseCoordinates = (coordStr: string): string[][] => {
+                            const result: string[][] = [];
+                            // 按分号分割多个坐标
+                            const coordList = coordStr.split(/[;]/);
+                            
+                            for (const coord of coordList) {
+                                const trimmed = coord.trim();
+                                if (!trimmed) continue;
+                                
+                                // 按逗号或空格分割纬度和经度
+                                const parts = trimmed.replace(/["'\[\]]/g, '').trim().split(/[,，\s]+/);
+                                if (parts.length >= 2) {
+                                    const lat = parts[0].trim();
+                                    const long = parts[1].trim();
+                                    // 检查是否是有效的数字
+                                    if (!isNaN(Number(lat)) && !isNaN(Number(long))) {
+                                        result.push([lat, long]);
                                     }
-                                } else {
-                                    locations = [[parts[0].trim(), parts[1].trim()]];
                                 }
+                            }
+                            
+                            return result;
+                        };
+
+                        // 如果是字符串格式的 coordinates，转换为数组
+                        if (typeof locations === "string") {
+                            const parsedCoords = parseCoordinates(locations);
+                            
+                            if (parsedCoords.length > 0) {
+                                locations = parsedCoords;
                             } else {
-                                // location 格式不正确，如果存在 coordinates 则尝试使用
+                                // 无法解析，如果存在另一个字段则尝试使用
                                 if (frontmatter.coordinates && frontmatter.location) {
                                     locations = frontmatter.coordinates;
                                     usedCoordinates = true;
@@ -1161,9 +1173,9 @@ export class LeafletRenderer extends MarkdownRenderChild {
 
                         // 如果切换到 coordinates 且是字符串格式，再次解析
                         if (usedCoordinates && typeof locations === "string") {
-                            const parts = locations.replace(/["'\[\]]/g, '').trim().split(/[,，\s]+/);
-                            if (parts.length >= 2) {
-                                locations = [[parts[0].trim(), parts[1].trim()]];
+                            const parsedCoords = parseCoordinates(locations);
+                            if (parsedCoords.length > 0) {
+                                locations = parsedCoords;
                             } else {
                                 this.map.log(`Could not parse coordinates string: ${locations}`);
                                 continue;
